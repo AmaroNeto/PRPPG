@@ -1,0 +1,30 @@
+@charset "utf-8";
+/* CSS Document */
+
+body{
+	background-color:#CCC;
+	color:#000;
+}
+
+a{ color: #666; }
+a:hover{color: #FC0;}
+
+.content{background-color:#f8f8f8;}
+
+/*------------------------Header------------------------*/
+
+#barra-brasil{background-color:#333;}
+	
+#Titulo{color:#000;}
+
+/*-------------------------MENU--------------------------*/
+
+#nav{background-color:#000;}
+#nav .menu li{background: #000;}
+
+/*------------------------Footer-------------------------*/
+
+#footer{
+	color: #FFF;
+	background-color: #000;
+}

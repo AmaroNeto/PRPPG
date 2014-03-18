@@ -1,0 +1,15 @@
+name = Biblio - PubMed
+description = Provides PubMed import and search to the Biblio module.
+core = 7.x
+package = Biblio
+dependencies[] = biblio
+files[] = EntrezClient.php
+files[] = EntrezPubmedArticle.php
+
+
+; Information added by drush on 2013-08-27
+version = "7.x-1.0-rc3+60-dev"
+core = "7.x"
+project = "biblio"
+datestamp = "1377621136"
+

@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * Open Academy Beta 4 Update: Enable admin theme, and switch to google fonts.
+ */
+function openacademy_core_update_7001(&$sandbox) {
+  variable_set('admin_theme', 'adminimal');
+  variable_set('node_admin_theme', 1);
+  
+  // Enable google webfont provider and disable fontsquirrel.
+  module_enable(array('google_fonts_api'));
+  module_disable(array('fontsquirrel'));
+
+  // Don't load custom font in the admin theme.
+  variable_set('fontyourface_load_everywhere', FALSE);
+}
+
+/**
+ * Open Academy Beta 5 Update: Switch to unary admin theme
+ */
+function openacademy_core_update_7002(&$sandbox) {
+  variable_set('admin_theme', 'unary');
+}

@@ -1,0 +1,3 @@
+core = "7.x"
+description = "Primeiro modulo para criar sites"
+name = "Criar sites"

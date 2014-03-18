@@ -1,0 +1,312 @@
+<?php
+
+/**
+ * @file
+ * Installation code for OpenAcademy.
+ */
+
+/**
+ * Implements hook_install_tasks()
+ */
+function openacademy_install_tasks($install_state) {
+  $tasks = array();
+
+  // Kick off the tasks and attempt to increase the memory if
+  // provided with less than 196M
+  if (ini_get('memory_limit') != '-1' && ini_get('memory_limit') <= '196M') {
+    ini_set('memory_limit', '196M');
+  }
+
+  // Increase maximum function nesting level to prevent install errors.
+  $max_nesting_level = ini_get('xdebug.max_nesting_level');
+  if ($max_nesting_level > 0 && $max_nesting_level <= '200') {
+    ini_set('xdebug.max_nesting_level', 200);
+  }
+
+  // Remove any status messages that might have been set. They are unneeded.
+  drupal_get_messages('status', TRUE);
+
+  // Set up the Open Academy Apps install task
+  $openacademy_server = array(
+    'machine name' => 'local',
+    'default apps' => array(
+      'openacademy_core',
+      'openacademy_news',
+      'openacademy_events',
+      'openacademy_publications',
+      'openacademy_courses',
+      'openacademy_people',
+    ),
+    'required apps' => array(
+      'openacademy_core',
+    ),
+    'default content callback' => 'openacademy_default_content',
+  );
+  require_once(drupal_get_path('module', 'apps') . '/apps.profile.inc');
+  $tasks = $tasks + apps_profile_install_tasks($install_state, $openacademy_server);
+
+  // Add the Panopoly theme selection to the installation process
+  require_once(drupal_get_path('module', 'panopoly_theme') . '/panopoly_theme.profile.inc');
+  $tasks = $tasks + panopoly_theme_profile_theme_selection_install_task($install_state);
+
+  // Set up the prepare task to close it out
+  $tasks['openacademy_prepare'] = array(
+    'display_name' => t('Prepare site'),
+    'type' => 'form',
+  );
+  return $tasks;
+}
+
+/**
+ * Implements hook_install_tasks_alter()
+ */
+function openacademy_install_tasks_alter(&$tasks, $install_state) {
+  // Magically go one level deeper in solving years of dependency problems
+  require_once(drupal_get_path('module', 'panopoly_core') . '/panopoly_core.profile.inc');
+  $tasks['install_load_profile']['function'] = 'panopoly_core_install_load_profile';
+
+  $tasks['install_select_profile']['display'] = FALSE;
+  $tasks['install_select_locale']['display'] = FALSE;
+  $tasks['install_select_locale']['run'] = INSTALL_TASK_SKIP;
+
+  // The "Welcome" screen needs to come after the first two steps
+  // (profile and language selection), despite the fact that they are disabled.
+  $new_task['install_welcome'] = array(
+    'display' => TRUE,
+    'display_name' => st('Welcome'),
+    'type' => 'form',
+    'run' => isset($install_state['parameters']['welcome']) ? INSTALL_TASK_SKIP : INSTALL_TASK_RUN_IF_REACHED,
+  );
+  $old_tasks = $tasks;
+  $tasks = array_slice($old_tasks, 0, 2) + $new_task + array_slice($old_tasks, 2);
+
+  // Create a more fun finished page with our Open Academy Saurus
+  $tasks['install_finished']['function'] = 'openacademy_install_finished';
+  $tasks['install_finished']['display_name'] = t('Finished!');
+  $tasks['install_finished']['type'] = 'form';
+
+  _openacademy_set_theme('openacademy_maintenance');
+}
+
+/**
+ * Force-set a theme at any point during the execution of the request.
+ *
+ * Drupal doesn't give us the option to set the theme during the installation
+ * process and forces enable the maintenance theme too early in the request
+ * for us to modify it in a clean way.
+ */
+function _openacademy_set_theme($target_theme) {
+  if ($GLOBALS['theme'] != $target_theme) {
+    unset($GLOBALS['theme']);
+
+    drupal_static_reset();
+    $GLOBALS['conf']['maintenance_theme'] = $target_theme;
+    _drupal_maintenance_theme();
+  }
+}
+
+/**
+ * Task callback: shows the welcome screen.
+ */
+function install_welcome($form, &$form_state, &$install_state) {
+  drupal_set_title(st('Welcome'));
+
+  $message = '<h2>' . st('Thank you for choosing OpenAcademy!') . '</h2>';
+  $message .= '<p>' . st('This is the installer for OpenAcademy - A Drupal
+    distribution that brings the best in web publishing for higher education
+    on a customizable Drupal platform. This distribution is a flexible,
+    extendable package that lets university departments run fully functional,
+    polished websites straight out of the box.') . '</p>';
+  $message .= '<p>' . st('Critical features are provided for handling courses,
+    research publications and presentations, departmental news, faculty profiles,
+    events and more') . '</p>';
+  $message .= '<p>' . st('Open Academy was originally built by !chapterthree
+  and is now being further developed and maintained by !systemseed. It is
+  built on top of the !panopoly base distribution - a cleanly extendable Drupal 7
+  installation profile with a Features-based, Kit-compliant functionality which
+  is developed and supported by !pantheon, and comes with a well documented
+  starter theme.',
+    array(
+      '!chapterthree' => l(t('Chapter Three'), 'http://chapterthree.com'),
+      '!systemseed' => l(t('SystemSeed'), 'http://systemseed.com'),
+      '!panopoly' => l(t('Panopoly'), 'https://drupal.org/project/panopoly'),
+      '!pantheon' => l(t('Pantheon Systems'), 'https://www.getpantheon.com/'),
+    )) . '</p>';
+  $message .= '<p>' . st('Please note that this is a community-supported work in progress,
+    so be sure to join us over on ' . l('systemseed.com', 'http://systemseed.com/openacademy') .
+    ' and share your first impressions.') . '</p>';
+
+  $form = array();
+  $form['welcome_message'] = array(
+    '#markup' => $message,
+  );
+  $form['actions'] = array(
+    '#type' => 'actions',
+  );
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => st("Get Started!"),
+    '#weight' => 10,
+  );
+  return $form;
+}
+
+function install_welcome_submit($form, &$form_state) {
+  global $install_state;
+
+  $install_state['parameters']['welcome'] = 'done';
+  $install_state['parameters']['locale'] = 'en';
+}
+
+/**
+ * Apps installer default content callback.
+ *
+ * Adapted from openenterprise_default_content()
+ */
+function openacademy_default_content(&$modules) {
+  $files = system_rebuild_module_data();
+  foreach($modules as $module) {
+    // This assumes a pattern MYMODULE_democontent which is probably not always true. Might be 
+    // better to check $_SESSION['apps_manifest'] and check to see if this exists:
+    // function_exists($_SESSION['module']['configure form'])
+    if (isset($files[$module . '_democontent'])) {
+      $modules[] = $module . '_democontent';
+    }
+  }
+}
+
+/**
+ * Form to talk about preparing the site for prime time
+ */
+function openacademy_prepare($form, &$form_state) {
+  
+  // Set the title 
+  drupal_set_title(t('Prepare Site'));
+  
+  $form = array();
+
+  $form['openingtext'] = array(
+    '#markup' => '<h2>' . t('Open Academy now needs to do a bit more Drupal magic to get everything setup.') . '</h2>',
+  );
+  
+  $form['actions'] = array(
+   '#prefix' => '<div class="form-actions">',
+   '#suffix' => '</div>',
+  );
+
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Prepare your site',
+  );
+
+  return $form;
+}
+
+/**
+ * Submit form to prepare site for prime time
+ */
+function openacademy_prepare_submit($form, &$form_state) {
+  // Flush all caches to ensure that any full bootstraps during the installer
+  // do not leave stale cached data, and that any content types or other items
+  // registered by the install profile are registered correctly.
+  drupal_flush_all_caches();
+
+  // Remember the profile which was used.
+  variable_set('install_profile', drupal_get_profile());
+
+  // Enable the admin theme.
+  variable_set('admin_theme', 'unary');
+  variable_set('node_admin_theme', 1);
+
+  // Install profiles are always loaded last
+  db_update('system')
+    ->fields(array('weight' => 1000))
+    ->condition('type', 'module')
+    ->condition('name', drupal_get_profile())
+    ->execute();
+
+  // Cache a fully-built schema.
+  drupal_get_schema(NULL, TRUE);
+
+  // Run cron to populate update status tables (if available) so that users
+  // will be warned if they've installed an out of date Drupal version.
+  // Will also trigger indexing of profile-supplied content or feeds.
+  drupal_cron_run();
+}
+
+/**
+ * Form to finish it all out and send us on our way
+ */
+function openacademy_install_finished($form, &$form_state) {
+  $form = array();
+  
+  // Set the title
+  drupal_set_title(st('Congratulations!'));
+  
+  $form['openingtext'] = array(
+    '#markup' => '<h2 class="bubble">' . t('Congratulations, you just installed Open Academy!') . '<span class="tip"></span></h2>',
+  );
+  
+  $form['openacademysaurus'] = array(
+    '#markup' => theme('image', array('path' => drupal_get_path('profile', 'openacademy') . '/images/openacademy_logo.png', 'attributes' => array('class' => array('openacademysaurus')))),
+  );
+  
+  $form['actions'] = array(
+   '#prefix' => '<div class="form-actions">',
+   '#suffix' => '</div>',
+  );
+
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Visit your new site!',
+  );
+
+  return $form;
+}
+
+/**
+ * Submit form to finish it out and send us on our way!
+ */
+function openacademy_install_finished_submit($form, &$form_state) {
+
+  // Allow anonymous and authenticated users to see content
+  user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array('access content'));
+  user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array('access content'));
+
+  // Once more for good measure
+  drupal_flush_all_caches();
+
+  // And away we go
+  // $form_state['redirect'] won't work here since we are still in the
+  // installer, so use drupal_goto() (for interactive installs only) instead.
+  $install_state = $form_state['build_info']['args'][0];
+  if ($install_state['interactive']) {
+    drupal_goto('<front>');
+  }
+}
+
+/**
+* Helper function to adjust an array and put an element right where we want it. 
+*/
+function openacademy_maintaince_array_insert(&$array, $key, $insert_array, $before = FALSE) {
+  $done = FALSE;
+  foreach ($array as $array_key => $array_val) {
+    if (!$before) {
+      $new_array[$array_key] = $array_val;
+    }
+    if ($array_key == $key && !$done) {
+      foreach ($insert_array as $insert_array_key => $insert_array_val) {
+        $new_array[$insert_array_key] = $insert_array_val;
+      }
+      $done = TRUE;
+    }
+    if ($before) {
+      $new_array[$array_key] = $array_val;
+    }
+  }
+  if (!$done) {
+    $new_array = array_merge($array, $insert_array);
+  }
+  // Put the new array in the place of the original.
+  $array = $new_array;
+}

@@ -1,0 +1,24 @@
+name = PRPPG
+description = Tema base para PRPPG.
+package = Core
+version = 1.0
+core = 7.x
+
+stylesheets[all][] = css/style.css
+stylesheets[all][] = css/Content.css
+stylesheets[all][] = css/animation.css
+stylesheets[print][] = css/print.css
+
+; DEFAULT REGIONS
+regions[page_top] = Page Top
+regions[header] = Header
+regions[highlight] = Highlight
+regions[help] = Help
+regions[content] = Content
+regions[footer] = Footer
+regions[page_bottom] = Page Bottom
+
+; CUSTOM REGIONS
+regions[language] = Language
+regions[navigation] = Navigation
+regions[slideshow] = Slide Show

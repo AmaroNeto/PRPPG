@@ -1,0 +1,13 @@
+name = Coder
+description = Developer Module that assists with code review and version upgrade
+package = Development
+core = 7.x
+files[] = coder.module
+
+
+; Information added by drush on 2013-08-27
+version = "7.x-2.0+1-dev"
+core = "7.x"
+project = "coder"
+datestamp = "1377621130"
+

@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the PRPPG feature.
+ */
+
+include_once 'prppg.features.inc';

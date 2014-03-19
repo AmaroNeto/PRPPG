@@ -55,31 +55,21 @@ a:active{text-decoration:none;}
 }
 
 #logo{
-	margin-bottom:10%; 
+	/*margin-bottom:10%;*/
+	margin-top:8%;
 	width:60px;
 	height:60px;
 }	
-
-#divTitulo{
-	text-align:center;
-	width:400px;
-	position:relative;
-	font-size: 24px;
-}
-
+	
 .Titulo { 
 	font-weight:bold;
-	width:400px;
+	min-width:400px;
 	padding: 10px 0 0 0;
-	position:relative;
-	font-size: 32px;
 }
 
-.Slogan{
+#Titulo{
 	position:relative;
-	width:400px;
-	padding: 10px 0 0 0;
-	font-size: 12px;
+	font-size: 24px;
 }
 
  /*Menu*/
@@ -142,7 +132,7 @@ a:active{text-decoration:none;}
 #nav .menu a:hover { color: #000000; }
 
 #nav .menu .menu{
-    position: absolute;
+	position: absolute;
     top: 30px;
     left: 0;
     list-style: none;

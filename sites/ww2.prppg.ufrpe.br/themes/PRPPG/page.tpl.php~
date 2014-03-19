@@ -83,12 +83,11 @@
 				<div id="Head">
 					<div id="divBrasao">
 						<?php if ($logo): ?>
-							<a href="<?php print $front_page; ?>" title="<?php print t('Inicio'); ?>" rel="home">
-							<img src="<?php print $logo; ?>" alt="<?php print t('UFRPE'); ?>" style="border-right:#999 2px solid; padding-right:20px; margin-right:20px; width:60px; height:60px;"/>
+							<a href="http://ufrpe.br" title="UFRPE" >
+							<img src="<?php print $logo; ?>" alt="<?php print t('Logo'); ?>" style="border-right:#999 2px solid; padding-right:20px; margin-right:20px; width:60px; height:96px;"/>
 							</a>
 						<?php endif; ?>
-							<a href="http://ufrpe.br" title="UFRPE" >
-							<img src="<?php print base_path() . path_to_theme() . '/' . 'images/brasao.png'; ?>" width="60px" height="96px" id="logo"/></a>
+						<a href="<?php print $front_page; ?>" title="<?php print t('Inicio'); ?>" rel="home"><img src="<?php print base_path() . path_to_theme() . '/' . 'images/brasao.png'; ?>" width="60px" height="96px" id="logo"/></a>
 					</div>
 					<a href="<?php print $front_page; ?>" title="<?php print t('Inicio'); ?>" rel="home">
 					<div id="divTitulo"><span id="Titulo"><p class="Titulo"> <?php print $site_name; ?> </p> <p class="Slogan"> <?php print $site_slogan; ?> </p></span>

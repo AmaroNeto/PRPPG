@@ -53,6 +53,8 @@ chmod 755 $dominio/files
 
 /opt/lampp/bin/mysql -u root -e "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, LOCK TABLES, CREATE TEMPORARY TABLES ON $sigla.* TO '$sigla'@'localhost' IDENTIFIED BY '$senha'; FLUSH PRIVILEGES;"
 
+
+
 #cd $dominio
 #mkdir files
 #chmod 777 files

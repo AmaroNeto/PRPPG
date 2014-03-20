@@ -195,7 +195,7 @@ function sites_form_submit($form, &$form_state) {
 	//$brasao = $file->filename;
 
 	//Roda o script para criar a nova instância
-	shell_exec("~/opt/lamp/htdocs/prppg/bashintro/./sitesdns1.sh $dominio $sigla $senhaSite $nomeSite");
+	shell_exec("/./opt/lampp/htdocs/prppg/bashintro/sitesdns1.sh $dominio $sigla $senhaSite $nomeSite");
 
 	//Configura permissões do novo usuário
 	//db_query("UPDATE {prppg}.users SET status = '0' WHERE users.name = '$name'");
@@ -208,6 +208,6 @@ function sites_form_submit($form, &$form_state) {
 	$registro -> nome = $nome;
 	$registro -> mail = $coordEmail;
 	drupal_write_record('sites', $registro);
-	drupal_set_message('Site criado com sucesso! url:'.$dominio);
+	drupal_set_message('Site criado com sucesso! url: '.$dominio);
 }
 

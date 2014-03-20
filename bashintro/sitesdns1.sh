@@ -25,7 +25,7 @@ echo "
 #Informações sobre o site 
 global $conf; 
 $conf['site_name'] = '$nome'; 
-#$conf['site_slogan'] = '$nome';" >> $dominio/settings.php
+$conf['site_slogan'] = '$nome';" >> $dominio/settings.php
 
 chmod 777 $dominio/settings.php
 

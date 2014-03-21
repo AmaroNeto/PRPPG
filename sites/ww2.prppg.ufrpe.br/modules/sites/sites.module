@@ -162,10 +162,11 @@ function sites_form_validate($form, &$form_state) {
 function sites_form_submit($form, &$form_state) {
 
 	//define as variaveis e cria uma nova instancia
-	$nome = $form_state['values']['programa'];
+	$nome = ucwords($form_state['values']['programa']);
 	$sigla = strtolower($form_state['values']['sigla']);
-	$nomeSite = strtoupper($form_state['values']['sigla']);
+	$codificado = base64_encode($nome);
 	$dominio = "ww2." . $sigla . ".ufrpe.br";
+	$sigla = strtoupper($sigla);
 	$coordDoSite = $form_state['values']['coord_do_site'];
 	$coordEmail = $form_state['values']['coord_email'];
 	$senhaSite = $form_state['values']['senha_site'];
@@ -193,9 +194,10 @@ function sites_form_submit($form, &$form_state) {
 	//$file = $form_state['storage']['file'];
 	//unset($form_state['storage']['file']);
 	//$brasao = $file->filename;
+	drupal_set_message('Criando site para: '.$nome);
 
 	//Roda o script para criar a nova instância
-	shell_exec("/./opt/lampp/htdocs/prppg/bashintro/sitesdns1.sh $dominio $sigla $senhaSite $nomeSite");
+	shell_exec("/./opt/lampp/htdocs/prppg/bashintro/sitesdns1.sh $dominio $sigla $senhaSite $codificado");
 
 	//Configura permissões do novo usuário
 	//db_query("UPDATE {prppg}.users SET status = '0' WHERE users.name = '$name'");
@@ -210,4 +212,3 @@ function sites_form_submit($form, &$form_state) {
 	drupal_write_record('sites', $registro);
 	drupal_set_message('Site criado com sucesso! url: '.$dominio);
 }
-

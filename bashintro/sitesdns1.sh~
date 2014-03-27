@@ -5,7 +5,7 @@ dominio=$1
 sigla=$2
 senha=$3
 #brasao=$4
-nome=$4
+nome=`echo $4 | base64 -d`
 conf='$conf'
 
 #siteName=${sigla^^}
@@ -24,8 +24,8 @@ sed -e "s/'database' => 'prppg'/'database' => '$sigla'/g" \
 echo "
 #Informações sobre o site 
 global $conf; 
-$conf['site_name'] = '$nome'; 
-#$conf['site_slogan'] = '$nome';" >> $dominio/settings.php
+$conf['site_name'] = '$sigla'; 
+$conf['site_slogan'] = '$nome';" >> $dominio/settings.php
 
 chmod 777 $dominio/settings.php
 
@@ -53,7 +53,13 @@ chmod 755 $dominio/files
 
 /opt/lampp/bin/mysql -u root -e "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, LOCK TABLES, CREATE TEMPORARY TABLES ON $sigla.* TO '$sigla'@'localhost' IDENTIFIED BY '$senha'; FLUSH PRIVILEGES;"
 
-
+#cria o virtualhost
+echo -e "127.0.0.1\tww2.{$sigla,,}.ufrpe.br" >> /etc/hosts
+echo "
+<VirtualHost *:80> #$sigla
+	ServerName ww2.${sigla,,}.ufrpe.br
+	DocumentRoot /opt/lampp/htdocs/prppg
+</VirtualHost> #$sigla" >> /opt/lampp/etc/extra/httpd-vhosts.conf
 
 #cd $dominio
 #mkdir files

@@ -79,6 +79,8 @@ function sites_form($form, &$form_state) {
         	'#title' => t('Logo do site:'),
         	'#description' => t("De preferência uma imagem do tipo png 60x60 pixels."),
 	);*/	  
+
+
 	  
 	$form['submit_button'] = array(
 	    	'#type' => 'submit',
@@ -92,13 +94,14 @@ function sites_form($form, &$form_state) {
                 	'url'=>'',
                 	'message' => t("Aguarde, site está sendo criado..."),
             		),
-		
+8/		
 
 	      	),*/
 	);
 	  
 	return $form;
 }
+
 
 function sites_form_alter(&$form, &$form_state, $form_id) {
   switch ($form_id) {
@@ -123,6 +126,8 @@ function sites_form_validate($form, &$form_state) {
 
 	$sigla = strtolower($form_state['values']['sigla']);
 	$coordEmail = $form_state['values']['coord_email'];
+
+	drupal_set_message(t('Verificando e criando site, aguarde...'), 'warning');
 	
 	if (db_field_exists('sites', 'sigla')) {
 		$resultadoSigla = db_query("SELECT * FROM {sites} WHERE sigla = '$sigla'");
@@ -142,6 +147,7 @@ function sites_form_validate($form, &$form_state) {
 			}
 		}
 	}
+	
 
 	//salva a imagem na pasta temporária do drupal se for uma extesão válida
   	/*$file = file_save_upload('file', array(
@@ -159,13 +165,18 @@ function sites_form_validate($form, &$form_state) {
  * grava as informações do novo site
  * na tabela sites do banco de dados.
  */
+
+
 function sites_form_submit($form, &$form_state) {
 
+	drupal_set_message(t('Criando site, aguarde...'), 'warning');
+	
 	//define as variaveis e cria uma nova instancia
-	$nome = $form_state['values']['programa'];
+	$nome = ucwords($form_state['values']['programa']);
 	$sigla = strtolower($form_state['values']['sigla']);
-	$nomeSite = strtoupper($form_state['values']['sigla']);
+	$codificado = base64_encode($nome);
 	$dominio = "ww2." . $sigla . ".ufrpe.br";
+	$sigla = strtoupper($sigla);
 	$coordDoSite = $form_state['values']['coord_do_site'];
 	$coordEmail = $form_state['values']['coord_email'];
 	$senhaSite = $form_state['values']['senha_site'];
@@ -185,6 +196,8 @@ function sites_form_submit($form, &$form_state) {
 			4 => 'editor',
 		),
 	);
+
+	
  
 	//Cria o usuário do novo site
 	$account = user_save('', $campos);
@@ -195,7 +208,7 @@ function sites_form_submit($form, &$form_state) {
 	//$brasao = $file->filename;
 
 	//Roda o script para criar a nova instância
-	shell_exec("/./opt/lampp/htdocs/prppg/bashintro/sitesdns1.sh $dominio $sigla $senhaSite $nomeSite");
+	shell_exec("/./opt/lampp/htdocs/prppg/bashintro/sitesdns1.sh $dominio $sigla $senhaSite $codificado");
 
 	//Configura permissões do novo usuário
 	//db_query("UPDATE {prppg}.users SET status = '0' WHERE users.name = '$name'");
@@ -210,4 +223,3 @@ function sites_form_submit($form, &$form_state) {
 	drupal_write_record('sites', $registro);
 	drupal_set_message('Site criado com sucesso! url: '.$dominio);
 }
-

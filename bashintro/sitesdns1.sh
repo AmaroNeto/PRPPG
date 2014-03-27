@@ -54,13 +54,12 @@ chmod 755 $dominio/files
 /opt/lampp/bin/mysql -u root -e "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, LOCK TABLES, CREATE TEMPORARY TABLES ON $sigla.* TO '$sigla'@'localhost' IDENTIFIED BY '$senha'; FLUSH PRIVILEGES;"
 
 #cria o virtualhost
-echo -e "127.0.0.1\tww2.$sigla.ufrpe.br" >> /etc/hosts
+echo -e "127.0.0.1\tww2.${sigla,,}.ufrpe.br" >> /etc/hosts
 echo "
-<VirtualHost *:80>
-	ServerName ww2.$sigla.ufrpe.br
+<VirtualHost *:80> #$sigla
+	ServerName ww2.${sigla,,}.ufrpe.br
 	DocumentRoot /opt/lampp/htdocs/prppg
-</VirtualHost>" >> /opt/lampp/etc/extra/httpd-vhosts.conf
-/opt/lampp/lampp restart
+</VirtualHost> #$sigla" >> /opt/lampp/etc/extra/httpd-vhosts.conf
 
 #cd $dominio
 #mkdir files

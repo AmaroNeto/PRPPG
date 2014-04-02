@@ -82,15 +82,17 @@
 				</div>
 				<div id="Head">
 					<div id="divBrasao">
-						<a href="http://ufrpe.br"><img src="<?php print base_path() . path_to_theme() . '/' . 'images/brasao.png'; ?>" width="60px" height="96px" style="border-right:#999 2px solid; padding-right:20px; margin-right:20px;"></a>
+						<a href="http://ufrpe.br" title="UFRPE" >
+							<img src="<?php print base_path() . path_to_theme() . '/' . 'images/brasao.png'; ?>"style="border-right:#999 2px solid; padding-right:20px; width:60px; height:96px;;" id="logo"/></a>
 						<?php if ($logo): ?>
-							<a href="<?php print $front_page; ?>" title="<?php print t('Inicio'); ?>" rel="home" id="logo">
-							<img src="<?php print $logo; ?>" alt="<?php print t('Inicio'); ?> style="<?php print('margin: 25px;');?>" />
+							<a href="<?php print $front_page; ?>" title="<?php print t('Inicio'); ?>" rel="home">
+							<img src="<?php print $logo; ?>" alt="<?php print t('UFRPE'); ?>" style="width:96px; height:96px;"/>
 							</a>
 						<?php endif; ?>
+							
 					</div>
 					<a href="<?php print $front_page; ?>" title="<?php print t('Inicio'); ?>" rel="home">
-					<div id="divTitulo"><span id="Titulo"><p class="Titulo"> Graduated Program in <p> <?php print $site_name; ?> </p></p></span>
+					<div id="divTitulo" style="width: 500px; height: 140px"><center id="Titulo"><p class="Titulo"> <?php print $site_name; ?> </p> <p class="Slogan"> <?php print $site_slogan; ?> </p></center>
 					</div></a>
         
 					<div id="divBusca" style="text-align:center">
@@ -135,9 +137,6 @@
 		<div id="content-wrap" class="wrap">
 			<div id="content" class="section clearfix content">
 				<a id="main-content"></a>
-<?php
-print render(module_invoke('Text Resize', 'test_resize', '30'));
-?>
 				<?php print render($title_prefix); ?>
 				<?php if ($title): ?>
 					<h1 class="title" id="page-title">
@@ -150,7 +149,9 @@ print render(module_invoke('Text Resize', 'test_resize', '30'));
 						<?php print render($tabs); ?>
 					</div>
 				<?php endif; ?>
-				<?php print render($page['content']); ?>
+					<div class="content" id="page-content">
+						<?php print render($page['content']); ?>
+					</div>
 				<?php print $feed_icons; ?>
 			</div>
 		</div>
@@ -158,10 +159,10 @@ print render(module_invoke('Text Resize', 'test_resize', '30'));
 		<div id="footer-wrap" class="wrap">
 			<div id="footer" class="section clearfix content">
 				<div id="Outros">
-            	<h2>Other Websites</h2>
+            	<h2>Outros Sites</h2>
                 <a href="http://www.periodicos.capes.gov.br"><img src="<?php print base_path() . path_to_theme() . '/' . 'images/periodicos.png'; ?>" alt="Periodicos Capes"/></a>
                 <a href="http://www.cnpq.br/"><img src="<?php print base_path() . path_to_theme() . '/' . 'images/CNPq.png'; ?>" alt="CNPq"/></a>
-                <a href="http://www.facepe.br"><img src="<?php print base_path() . path_to_theme() . '/' . 'images/FACEPE.png'; ?>" alt="FACEPE"></a> 
+                <a href="http://www.facepe.br"><img src="<?php print base_path() . path_to_theme() . '/' . 'images/FACEPE.png'; ?>" alt="FACEPE"/></a> 
                 <a href="http://www.finep.gov.br"><img src="<?php print base_path() . path_to_theme() . '/' . 'images/FINEP.png'; ?>" alt="FINEP"/></a>
                 <a href="http://www.sudene.gov.br/"><img src="<?php print base_path() . path_to_theme() . '/' . 'images/Sudene.png'; ?>" alt="Sudene"/></a>
                 <a href="http://www.capes.gov.br/"><img src="<?php print base_path() . path_to_theme() . '/' . 'images/Capes.png'; ?>" alt="CAPES"/></a>	

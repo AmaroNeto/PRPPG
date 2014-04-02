@@ -68,7 +68,7 @@ a:active{text-decoration:none;}
 }
 
 #Titulo{
-	position:center;
+	position:relative;
 	font-size: 24px;
 }
 

@@ -52,12 +52,13 @@ a:active{text-decoration:none;}
 }
 #divBrasao a{
 	text-decoration:none;
-}	
+}
 
 #logo{
-	margin-bottom:15%; 
+	/*margin-bottom:10%;*/
+	margin-top:8%;
 	width:60px;
-	height:47px;
+	height:60px;
 }	
 	
 .Titulo { 

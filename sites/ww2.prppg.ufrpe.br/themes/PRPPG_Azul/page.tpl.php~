@@ -92,7 +92,7 @@
 							
 					</div>
 					<a href="<?php print $front_page; ?>" title="<?php print t('Inicio'); ?>" rel="home">
-					<div id="divTitulo"><center id="Titulo"><p class="Titulo"> <?php print $site_name; ?> </p> <p class="Slogan"> <?php print $site_slogan; ?> </p></center>
+					<div id="divTitulo" style="width: 500px; height: 140px"><center id="Titulo"><p class="Titulo"> <?php print $site_name; ?> </p> <p class="Slogan"> <?php print $site_slogan; ?> </p></center>
 					</div></a>
         
 					<div id="divBusca" style="text-align:center">

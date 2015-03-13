@@ -1,0 +1,24 @@
+<?php
+/**
+ * @file
+ * Install functions for Barra do Governo do Brasil module.
+ */
+
+/**
+ * Implements hook_enable().
+ */
+function barra_gov_enable() {
+
+  $message = t('The "Barra do Governo do Brasil"  module was successfully enabled.');
+  drupal_set_message($message, 'status');
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function barra_gov_uninstall() {
+
+  // Logs the uninstall message.
+  watchdog('Barra do Governo do Brasil', 'Uninstalling module and deleting fields');
+
+}

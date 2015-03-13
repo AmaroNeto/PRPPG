@@ -1,0 +1,52 @@
+<?php
+
+/*
+ * hook_menu
+ */
+function sites_menu() {
+
+	
+	$items['admin/criar'] = array(
+		'menu_name' => 'management',
+		'title' => 'Criar site',
+		'page title' => 'Criar site',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('sites_form'),
+		'access callback' => user_is_logged_in(),
+		'file' => 'criar.form.inc',
+	);
+
+	$items['criar/%'] = array(
+		'title' => 'criar',
+		'page title' => 'criar',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array(1),
+		'access callback' => user_is_logged_in(),
+		
+	);
+
+	 if(user_access('admin')) return $items;
+}
+
+/*
+ * hook_perm
+ */
+function sites_perm() {
+ return array('admin');
+}
+
+function sites_form_alter(&$form, &$form_state, $form_id) {
+  switch ($form_id) {
+    case 'sites_form':
+      $form['#after_build'][] = 'sites_after_build';
+      break;
+  }
+}
+
+function sites_after_build($form, &$form_state) {
+  $path = drupal_get_path('module', 'sites');
+  drupal_add_css ("$path/sites.css");
+  return $form;
+}
+
+

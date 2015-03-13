@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#atribui as variáveis para configuração do site
+sigla="${1,,}"
+dominio="ww2.${sigla,,}.ufrpe.br"
+
+#remove o diretório do novo site dentro da pasta sites
+cd /var/www/prppg/sites
+rm -rf $dominio
+
+#Remove o banco de dados
+mysql -Bse 'DELETE FROM prppg.sites WHERE sigla LIKE "PPP"'
+mysqladmin -u root DROP "${sigla,,}"
+
+#apaga o virtualhost
+rm -rf /etc/apache2/sites-available/$sigla.conf
+rm -rf /etc/apache2/sites-enabled/$sigla.conf
+
+#sed -i "/$sigla/d" /opt/lampp/etc/extra/httpd-vhosts.conf
+

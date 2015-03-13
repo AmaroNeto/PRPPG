@@ -1,0 +1,184 @@
+<?php
+/*
+ * hook_form
+ */
+function sites_form($form, &$form_state) {
+
+	//upload files
+	$form = array(
+  		'#attributes' => array('enctype' => "multipart/form-data"),
+	);
+
+	$form['programa'] = array(
+		'#type' => 'textfield',
+    		'#title' => t('Nome do programa:'),
+		'#size' => 20,
+    		'#maxlength' => 250,
+		'#required' => TRUE,
+  	);
+
+	
+	$form['sigla'] = array(
+		'#type' => 'textfield',
+	    	'#title' => t('Sigla do programa:'),
+    		'#size' => 20,
+    		'#maxlength' => 10,
+    		'#required' => TRUE,
+  	);
+
+	$form['coord_email'] = array(
+	    	'#type' => 'textfield',
+	    	'#title' => t('E-mail da coordenação:'),
+	    	'#size' => 20,
+	    	'#maxlength' => 50,
+	   	'#required' => TRUE,
+	);
+
+	$form['conf_coord_email'] = array(
+	    	'#type' => 'textfield',
+	    	'#title' => t('Repita o e-mail da coordenação:'),
+	    	'#size' => 20,
+	    	'#maxlength' => 50,
+	   	'#required' => TRUE,
+	);
+	  
+	$form['senha_site'] = array(
+		'#type' => 'password', 
+		'#title' => t('Senha:'), 
+		'#size' => 20,
+		'#maxlength' => 32, 
+		'#required' => TRUE,
+	);
+
+	$form['conf_senha_site'] = array(
+		'#type' => 'password', 
+		'#title' => t('Repita a senha:'), 
+		'#size' => 20,
+		'#maxlength' => 32, 
+		'#required' => TRUE,
+	);	  
+
+	$form['submit_button'] = array(
+	    	'#type' => 'submit',
+	    	'#value' => t('Criar!'),
+		/*'#ajax' => array(
+		        'callback'=>'carregador.js',
+			'wrapper' => 'poll_choice',
+                	'message' => t("Aguarde, site está sendo criado..."),
+		),*/
+	);
+
+		return $form;
+}
+
+/*
+ * Valida o formulário de criação de sites
+ * Procura na tabela sites coluna sigla a se
+ * o novo site já foi instanciado e na coluna mail
+ * se o email já foi cadastrado.
+ */
+function sites_form_validate($form, &$form_state) {	
+	global $user;
+	$sigla = strtolower($form_state['values']['sigla']);
+	$coordEmail = $form_state['values']['coord_email'];
+	$senha_site = $form_state['values']['senha_site'];
+	$conf_senha_site = $form_state['values']['conf_senha_site'];
+	$coord_email = $form_state['values']['coord_email'];
+	$conf_coord_site = $form_state['values']['conf_coord_email'];
+		
+	if (db_field_exists('sites', 'sigla')) {
+		$resultadoSigla = db_query("SELECT * FROM {sites} WHERE sigla = '$sigla'");
+		foreach ($resultadoSigla as $registro) {
+			if ($registro -> sigla == $sigla) {
+				form_set_error($sigla, t('O site ' . $sigla . ' já está cadastrado.'));
+				break;
+			}
+		}
+	}
+	if (db_field_exists('sites', 'mail')) {
+		$resultadoMail = db_query("SELECT * FROM {sites} WHERE mail = '$coordEmail'");
+		foreach ($resultadoMail as $registro) {
+			if ($registro -> mail == $coordEmail) {
+				form_set_error($coordEmail, t('O e-mail ' . $coordEmail . ' já está cadastrado.'));
+				break;
+			}
+		}
+	}
+
+	if (!($senha_site==$conf_senha_site)) {
+		$confirm=false;
+		form_set_error($coordEmail, t('As senhas não correspondem'));
+	}
+
+	if (!($coord_email==$conf_coord_site)) {
+		$confirm=false;
+		form_set_error($coordEmail, t('Os emails não correspondem'));
+	}
+
+	//salva a imagem na pasta temporária do drupal se for uma extesão válida
+  	/*$file = file_save_upload('file', array(
+	    	'file_validate_extensions' => array('png jpeg jpg')
+  	));
+  	if (isset($file->filename)) {
+		$form_state['storage']['file'] = $file;
+  	} else {
+    		form_set_error('file', t('Arquivo inválido, apenas imagens com as extensões png jpeg jpg são permitidas'));
+  	}*/
+}
+
+/*
+ * Cria uma instancia do novo site e depois
+ * grava as informações do novo site
+ * na tabela sites do banco de dados.
+ */
+function sites_form_submit($form, &$form_state) {
+	
+	//define as variaveis e cria uma nova instancia
+	$nome = ucwords($form_state['values']['programa']);
+	$sigla = strtolower($form_state['values']['sigla']);
+	$codificado = base64_encode($nome);
+	$dominio = "ww2." . $sigla . ".ufrpe.br";
+	$sigla = strtoupper($sigla);
+	$coordDoSite = 'admin';
+	$coordEmail = $form_state['values']['coord_email'];
+	$senhaSite = $form_state['values']['senha_site'];
+
+	
+	//Configura o usuário do novo site
+	$name = $sigla . '.editor';
+	$campos = array(
+		'name' => $name,
+		'mail' => $coordEmail,
+		'pass' => $senhaSite,
+		'status' => 1,
+		'init' => $coordEmail,
+		'timezone' => 'America/Sao_Paulo',
+		'language' => 'pt-br',
+		'roles' => array(
+			4 => 'editor',
+		),
+	);
+
+	
+ 
+	//Cria o usuário do novo site
+	$account = user_save('', $campos);
+
+	//Roda o script para criar a nova instância
+	//Verificar se o script foi executado
+	shell_exec(drupal_get_path('module', 'sites') ."/bash/sitesdns1.sh $dominio $sigla $senhaSite $codificado");
+
+	//Configura permissões do novo usuário
+	//db_query("UPDATE {prppg}.users SET status = '0' WHERE users.name = '$name'");
+	db_query("DELETE FROM {prppg}.users WHERE users.name = '$name'");
+
+	//grava informações da nova instância na tabela sites do banco de dados
+	$registro = new stdClass();
+	$registro -> sigla = $sigla;
+	$registro -> dominio = $dominio;
+	$registro -> nome = $nome;
+	$registro -> mail = $coordEmail;
+	if (drupal_write_record('sites', $registro) == SAVED_NEW){
+		drupal_set_message('Site criado com sucesso! url: '.$dominio);
+	} 
+}

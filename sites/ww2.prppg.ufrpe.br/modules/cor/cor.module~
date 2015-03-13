@@ -1,0 +1,52 @@
+<?php
+
+/*
+ * hook_menu
+ */
+function cor_menu() {
+
+	
+	$items['admin/appearance/settings/corporateclean'] = array(
+		'menu_name' => 'Management',
+		'title' => 'Cor',
+		'page title' => 'Cor',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('cor_form'),
+		'access callback' => user_is_logged_in(),
+		'file' => 'cor.form.inc',
+	);
+
+	$items['cor/%'] = array(
+		'title' => 'cor',
+		'page title' => 'cor',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array(1),
+		'access callback' => user_is_logged_in(),
+		
+	);
+
+	 if(user_access('admin')) return $items;
+}
+
+/*
+ * hook_perm
+ */
+function cor_perm() {
+ return array('admin');
+}
+
+function cor_form_alter(&$form, &$form_state, $form_id) {
+  switch ($form_id) {
+    case 'cor_form':
+      $form['#after_build'][] = 'cor_after_build';
+      break;
+  }
+}
+
+function cor_after_build($form, &$form_state) {
+  $path = drupal_get_path('module', 'cor');
+  drupal_add_css ("$path/cor.css");
+  return $form;
+}
+
+

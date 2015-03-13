@@ -1,0 +1,10 @@
+.view-front-page-slideshow .views-field-title{
+	position: absolute;
+	bottom: 60px;
+	right: 0px;
+	font-size: 30px;
+	text-align: center;
+	background-color: white;
+	opacity: 0.5;
+	width: 235px;
+}

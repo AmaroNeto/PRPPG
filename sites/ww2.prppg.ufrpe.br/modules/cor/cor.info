@@ -1,0 +1,4 @@
+core = "7.x"
+description = "Modulo para trocar de cor"
+name = "Cor"
+package = "PRPPG"

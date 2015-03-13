@@ -565,3 +565,6 @@ $conf['404_fast_html'] = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
  * Remove the leading hash signs to disable.
  */
 # $conf['allow_authorize_operations'] = FALSE;
+
+$conf['site_slogan']='Universidade Federal Rural de Pernambuco Pró-Reitoria de Pesquisa e Pós-Graduação';
+$conf['site_name'] = 'Programa de Criação de Sites';

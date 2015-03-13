@@ -45,7 +45,7 @@ function prppg_content_menu_links_defaults() {
     'menu_name' => 'management',
     'link_path' => 'node/39',
     'router_path' => 'node/%',
-    'link_title' => 'FAQ',
+    'link_title' => 'Dúvidas',
     'options' => array(
       'attributes' => array(
         'title' => 'Perguntas Frequentes',

@@ -21,7 +21,7 @@ a:active{text-decoration:none;}
 }
 
 .content{
-	width: 960px;
+	width: 1030px;
 	margin-left: auto;
 	margin-right:auto;
 	
@@ -100,7 +100,7 @@ a:active{text-decoration:none;}
 	font-size:95%;
 	z-index:1;
 	position:relative;
-	width: 960px;
+	width: 1030px;
 	height:30px;
 }
 
@@ -306,14 +306,13 @@ a:active{text-decoration:none;}
 /*------------------------Footer-------------------------*/
 
 #footer{
-	height:250px;
+	height:280px;
 	overflow:hidden;
 }
 
 
 #Outros{
 	padding: 0 20px 0 20px;
-	width: 360px;
 }
 
 #Outros img{
@@ -331,10 +330,7 @@ a:active{text-decoration:none;}
 #login div{
 	width: 210px;
 	float:right;
-	background-color:#000;
-	position:relative;
-	top: -75px;
-	right: 5px;
+	background-color:transparent;
 }
 
 /*-----------------------Blocks--------------------------*/

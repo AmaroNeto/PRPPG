@@ -19,12 +19,12 @@ a:hover{color: #009;}
 
 /*-------------------------MENU--------------------------*/
 
-#nav{background-color:#003;}
-#nav .menu li{background: #003;}
+#nav{background-color:#006;}
+#nav .menu li{background: #006;}
 
 /*------------------------Footer-------------------------*/
 
 #footer{
 	color: #FFF;
-	background-color: #002;
+	background-color: #003;
 }

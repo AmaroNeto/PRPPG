@@ -5,103 +5,35 @@
  */
 function sites_menu() {
 
-	$items['criar'] = array(
+	
+	$items['admin/criar'] = array(
+		'menu_name' => 'management',
 		'title' => 'Criar site',
 		'page title' => 'Criar site',
 		'page callback' => 'drupal_get_form',
 		'page arguments' => array('sites_form'),
-		'access callback' => 'user_is_logged_in'
+		'access callback' => user_is_logged_in(),
+		'file' => 'criar.form.inc',
 	);
+
 	$items['criar/%'] = array(
 		'title' => 'criar',
 		'page title' => 'criar',
 		'page callback' => 'drupal_get_form',
 		'page arguments' => array(1),
-		'access callback' => 'user_is_logged_in'
+		'access callback' => user_is_logged_in(),
+		
 	);
 
-	return $items;
+	 if(user_access('admin')) return $items;
 }
 
 /*
- * hook_form
+ * hook_perm
  */
-function sites_form($form, &$form_state) {
-
-	//upload files
-	$form = array(
-  		'#attributes' => array('enctype' => "multipart/form-data"),
-	);
-  
-	$form['programa'] = array(
-		'#type' => 'textfield',
-    		'#title' => t('Nome do programa:'),
-		'#size' => 20,
-    		'#maxlength' => 50,
-		'#required' => TRUE,
-		//'#attributes' => array('class' => 'name-textbox'), 
-  	);
-  
-	$form['sigla'] = array(
-		'#type' => 'textfield',
-	    	'#title' => t('Sigla do programa:'),
-    		'#size' => 20,
-    		'#maxlength' => 10,
-    		'#required' => TRUE,
-  	);
-  
-	$form['coord_do_site'] = array(
-	    	'#type' => 'textfield',
-		 '#title' => t('Nome do coordenador do programa:'),
-	    	'#size' => 20,
-	    	'#maxlength' => 50,
-	    	'#required' => TRUE,
-	);
-
-	$form['coord_email'] = array(
-	    	'#type' => 'textfield',
-	    	'#title' => t('E-mail:'),
-	    	'#size' => 20,
-	    	'#maxlength' => 50,
-	   	'#required' => TRUE,
-	);
-	  
-	$form['senha_site'] = array(
-		'#type' => 'password', 
-		'#title' => t('Senha:'), 
-		'#size' => 20,
-		'#maxlength' => 32, 
-		'#required' => TRUE,
-	);
-
-	/*$form['file'] = array(
-        	'#type' => 'file',
-        	'#title' => t('Logo do site:'),
-        	'#description' => t("De preferência uma imagem do tipo png 60x60 pixels."),
-	);*/	  
-
-
-	  
-	$form['submit_button'] = array(
-	    	'#type' => 'submit',
-	    	'#value' => t('Criar!'),
-		/*'#ajax' => array(
-		        'callback'=>'ajax_callback',
-	            	'wrapper'=>'progress-bar',
-			'speed' => '3000',
-			'progress'=> array(
-        	        'type'=> 'bar', 
-                	'url'=>'',
-                	'message' => t("Aguarde, site está sendo criado..."),
-            		),
-8/		
-
-	      	),*/
-	);
-	  
-	return $form;
+function sites_perm() {
+ return array('admin');
 }
-
 
 function sites_form_alter(&$form, &$form_state, $form_id) {
   switch ($form_id) {
@@ -110,116 +42,11 @@ function sites_form_alter(&$form, &$form_state, $form_id) {
       break;
   }
 }
+
 function sites_after_build($form, &$form_state) {
   $path = drupal_get_path('module', 'sites');
   drupal_add_css ("$path/sites.css");
   return $form;
 }
 
-/*
- * Valida o formulário de criação de sites
- * Procura na tabela sites coluna sigla a se
- * o novo site já foi instanciado e na coluna mail
- * se o email já foi cadastrado.
- */
-function sites_form_validate($form, &$form_state) {	
 
-	$sigla = strtolower($form_state['values']['sigla']);
-	$coordEmail = $form_state['values']['coord_email'];
-
-	drupal_set_message(t('Verificando e criando site, aguarde...'), 'warning');
-	
-	if (db_field_exists('sites', 'sigla')) {
-		$resultadoSigla = db_query("SELECT * FROM {sites} WHERE sigla = '$sigla'");
-		foreach ($resultadoSigla as $registro) {
-			if ($registro -> sigla == $sigla) {
-				form_set_error($sigla, t('O site ' . $sigla . ' já está cadastrado.'));
-				break;
-			}
-		}
-	}
-	if (db_field_exists('sites', 'mail')) {
-		$resultadoMail = db_query("SELECT * FROM {sites} WHERE mail = '$coordEmail'");
-		foreach ($resultadoMail as $registro) {
-			if ($registro -> mail == $coordEmail) {
-				form_set_error($coordEmail, t('O e-mail ' . $coordEmail . ' já está cadastrado.'));
-				break;
-			}
-		}
-	}
-	
-
-	//salva a imagem na pasta temporária do drupal se for uma extesão válida
-  	/*$file = file_save_upload('file', array(
-	    	'file_validate_extensions' => array('png jpeg jpg')
-  	));
-  	if (isset($file->filename)) {
-		$form_state['storage']['file'] = $file;
-  	} else {
-    		form_set_error('file', t('Arquivo inválido, apenas imagens com as extensões png jpeg jpg são permitidas'));
-  	}*/
-}
-
-/*
- * Cria uma instancia do novo site e depois
- * grava as informações do novo site
- * na tabela sites do banco de dados.
- */
-
-
-function sites_form_submit($form, &$form_state) {
-
-	drupal_set_message(t('Criando site, aguarde...'), 'warning');
-	
-	//define as variaveis e cria uma nova instancia
-	$nome = ucwords($form_state['values']['programa']);
-	$sigla = strtolower($form_state['values']['sigla']);
-	$codificado = base64_encode($nome);
-	$dominio = "ww2." . $sigla . ".ufrpe.br";
-	$sigla = strtoupper($sigla);
-	$coordDoSite = $form_state['values']['coord_do_site'];
-	$coordEmail = $form_state['values']['coord_email'];
-	$senhaSite = $form_state['values']['senha_site'];
-
-	
-	//Configura o usuário do novo site
-	$name = $sigla . '.editor';
-	$campos = array(
-		'name' => $name,
-		'mail' => $coordEmail,
-		'pass' => $senhaSite,
-		'status' => 1,
-		'init' => $coordEmail,
-		'timezone' => 'America/Sao_Paulo',
-		'language' => 'pt-br',
-		'roles' => array(
-			4 => 'editor',
-		),
-	);
-
-	
- 
-	//Cria o usuário do novo site
-	$account = user_save('', $campos);
-
-	//define a imagem para o site
-	//$file = $form_state['storage']['file'];
-	//unset($form_state['storage']['file']);
-	//$brasao = $file->filename;
-
-	//Roda o script para criar a nova instância
-	shell_exec("/./opt/lampp/htdocs/prppg/bashintro/sitesdns1.sh $dominio $sigla $senhaSite $codificado");
-
-	//Configura permissões do novo usuário
-	//db_query("UPDATE {prppg}.users SET status = '0' WHERE users.name = '$name'");
-	db_query("DELETE FROM {prppg}.users WHERE users.name = '$name'");
-
-	//grava informações da nova instância na tabela sites do banco de dados
-	$registro = new stdClass();
-	$registro -> sigla = $sigla;
-	$registro -> dominio = $dominio;
-	$registro -> nome = $nome;
-	$registro -> mail = $coordEmail;
-	drupal_write_record('sites', $registro);
-	drupal_set_message('Site criado com sucesso! url: '.$dominio);
-}

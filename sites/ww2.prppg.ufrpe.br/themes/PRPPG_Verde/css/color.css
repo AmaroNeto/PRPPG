@@ -3,32 +3,32 @@
 
 body{
 	background-color:#CCC;
-	color:#030;
+	color:#055702;
 }
 
-a{ color: #090; }
-a:hover{color: #030;}
+a{ color: #055702; }
+a:hover{color: #055702;}
 
 .content{background-color:#f8f8f8;}
 
 /*------------------------Header------------------------*/
 
-#barra-brasil{background-color:#030;}
+#barra-brasil{background-color:#055702;}
 	
-#Titulo{color:#030;}
+#Titulo{color:#055702;}
 
 .second-level-menu li{ background: #999;}
 .second-level-menu li:hover { background: #CCC;}
 
 /*-------------------------MENU--------------------------*/
 
-#nav{background-color:#020;}
-#nav .menu li{background: #020;}
+#nav{background-color:#055702;}
+#nav .menu li{background: #055702;}
 
 
 /*------------------------Footer-------------------------*/
 
 #footer{
 	color: #FFF;
-	background-color: #010;
+	background-color: #033E01;
 }
